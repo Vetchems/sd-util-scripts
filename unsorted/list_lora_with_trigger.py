@@ -1,0 +1,30 @@
+import os
+
+def search_and_write_filenames(folder_path, output_file):
+    # Open the output file in write mode
+    with open(output_file, 'w', encoding='utf-8') as outfile:
+        # Recursively search for .pt and .safetensors files
+        for root, dirs, files in os.walk(folder_path):
+            for file in files:
+                if file.endswith('.pt') or file.endswith('.safetensors'):
+                    file_name = os.path.splitext(file)[0]  # Get the filename without extension
+
+                    # Check if there is a matching text file
+                    txt_file_path = os.path.join(root, file_name + '.txt')
+                    if os.path.isfile(txt_file_path):
+                        with open(txt_file_path, 'r', encoding='utf-8') as txt_file:
+                            contents = txt_file.read().strip()
+                            outfile.write(f'<lora:{file_name}:{weight}:> {contents}\n')
+                    else:
+                        outfile.write(f'<lora:{file_name}:{weight}>\n')
+
+# Specify the folder path where the search should start
+folder_path = './'
+
+weight = 1
+
+# Specify the output file path
+output_file = f'./lora_w{weight}.txt'
+
+# Call the function to search and write filenames to the output file
+search_and_write_filenames(folder_path, output_file)
